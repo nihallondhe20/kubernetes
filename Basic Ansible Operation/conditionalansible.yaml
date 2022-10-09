@@ -1,0 +1,14 @@
+---
+ - hosts: all
+   tasks:
+    - name: Install git server
+      apt: 
+        name: git
+        state: latest
+      when: ansible_os_family == "Debian"
+
+    - name: Install git server on RedHat
+      apt: 
+        name: git
+        state: latest
+      when: ansible_os_family == "RedHat" 

@@ -1,0 +1,20 @@
+---
+ - hosts: all
+   become: true
+   tasks: 
+     - name: Installing apache server
+     - apt:
+        name: apache2
+        state: latest
+
+     - name: start service in all hosts
+       service: 
+        name: starting service httpd
+        state: started
+        enabled: true
+
+     - name: copy index html
+       copy:   // we can use template instead of copy for accessing vars into index/another file 
+        name: copying index to server
+        src: index.html
+        dest: /var/www/html/index.html

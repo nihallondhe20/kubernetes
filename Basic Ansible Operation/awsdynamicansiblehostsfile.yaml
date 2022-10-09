@@ -1,0 +1,29 @@
+plugin: aws_ec2
+
+aws_access_key: "mentionkey"
+aws_secret_key: "mentionsecretkey"
+
+regions:
+  - ap-south-1
+filters:
+  instance-state-name: running
+
+keyed_groups:
+  - key: tags.Name
+    prefix: ""
+    separator: ""
+
+hostnames:
+  - private-ip-address
+
+
+compose:
+  ansible_hosts: private_ip_address
+
+
+// to run above use following command
+# ansible-playbook -i awsdynamicansiblehostsfile.yaml testingserver.yaml  -l {servergroupname}
+
+
+# -l means limit only run on this groups 
+# instead of servergroupname you can provide tag name also

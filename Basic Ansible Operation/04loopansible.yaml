@@ -1,0 +1,19 @@
+---
+ - hosts:
+   become: true
+   tasks:
+    - name: Install Git
+      apt:
+       name: git
+       state: latest
+      
+    - name: Install unzip
+      apt:
+       name: unzip
+       state: present
+      
+    - name: install npm
+      apt: 
+       name:  docker
+       state: latest
+...
