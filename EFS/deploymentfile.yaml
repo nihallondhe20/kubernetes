@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: efs-client-provisioner
+  labels:
+    app: efs-client-provisioner
+  # replace with namespace where provisioner is deployed
+  namespace: cns-test
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: efs-client-provisioner
+  template:
+    metadata:
+      labels:
+        app: efs-client-provisioner
+    spec:
+      serviceAccountName: efs-client-provisioner
+      containers:
+        - name: efs-client-provisioner
+          image: k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
+          volumeMounts:
+            - name: efs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: efs-provisioner
+            - name: NFS_SERVER
+              value: #Past here ip 
+            - name: NFS_PATH
+              value: /persistent-volume # remove this 
+      volumes:
+        - name: efs-client-root
+          nfs:
+            server: # paste here ip
+            path: /persistent-volume #remove this also
