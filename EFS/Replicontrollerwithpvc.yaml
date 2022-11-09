@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: wowapp
+  namespace: test
+spec:
+  replicas: 2
+  selector:
+    app: wowapp
+  template:
+    metadata:
+      name: wowapp
+      labels:
+        app: wowapp
+    spec:
+      containers:
+        - name: wowappcontainer
+          image: wowapptech/test:node-js
+          ports:
+            - containerPort: 3000
+
+          volumeMounts:
+            - name:  testvolume
+              mountPath:  /home/app
+
+      volumes:
+        - name:  testvolume
+          mountPath:  /home/app
+---
+# https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myapp
+  namespace: test
+  labels:
+    app: myapp
+spec:
+  
+  storageClassName: default
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: wowjobsvc
+  namespace: test
+spec:
+  selector:
+    app: wowapp
+  type: NodePort
+  ports:
+  - 
+    port: 80
+    targetPort: 3000
+---
+
+

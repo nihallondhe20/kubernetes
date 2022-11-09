@@ -37,3 +37,10 @@ spec:
           nfs:
             server: # paste here ip
             path: /persistent-volume #remove this also
+
+
+
+
+
+
+
