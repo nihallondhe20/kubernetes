@@ -1,0 +1,114 @@
+***********
+------------------------------------
+STEPS TO INSTALL KUBERNETES CLUSTER WITH PERSISTENT VOLUME ON EC2 INSTANCE
+____________________________________
+
+step1)create All setup cluste and node.
+2) create new instance with EFS label.
+3) Install nfs-server on it to connect on # $ apt install nfs-kernel-server -y
+4) create directory to share with client and also change permission 
+   #  sudo mkdir -p /mnt/nfs_share
+   #  sudo chmod 777 /mnt/nfs_share         # change file permission
+   #  sudo chown -R nobody:nogroup /mnt/nfs_share
+ 
+5) to access this folder need to export from export file  # sudo nano /etc/exports
+    add at bottom line   #  /mnt/nfs_share *(rw,sync,no_subtree_check,no_root_squash)               #----* indicates all ip you can change by your ip
+  now retstart this file    
+                         # sudo exportfs -a     &  
+                         # sudo systemctl restart nfs-kernel-server
+6)  Add nfs port security in security group with all ip open
+
+7) go to server create deployment/replication controller with volume mount option 
+    volumes:
+    - name: volname
+      nfs:
+        server:  170.0.0.1
+        path:    /mnt/nfs_server             #find and change this two field according you ip and ec2 path
+
+8)Again install step 3) on cluster server and worker node  ---
+9) create pvc in deployment file # if already leave it      
+for manual pvcclass can refer             
+---
+  apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: MYAPP                                              
+    namespace: default      					
+    labels:       						
+      app: MYAPP						 
+  spec: 							
+    storageClassName: yourstorageclass          
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 2Gi
+---
+
+# this is manually create class name with file storageclass and check with
+# kubectl get storageclass
+#  pvc can map with pv only on 2 condition  
+1)  exact volume match  2) type of volume RWO/RWE/ROX
+# pvc in deploy pod must be same name with pvc metadata:name
+
+error:-----  #kubectl get pvc -n <namespace>   # check pvc is pending there  
+             # kubectl get pod -n <ns>        -------copy pod name
+             # describe pod if pending    # kubectl describe pod <podname> -n <ns>
+  1)   volume binding error 
+         go to unbound immediate pvc    means  pv not attach with host/server
+        # kubectl get pv   # check is there storage class congi in server     also check in deploy => pvc code  is there storageclass = default
+
+
+now create manually pv -#########------------------------------
+
+create new file with storage.class   # mkdir storage.class
+---
+  apiVersion: v1
+  kind: PersistentVolume
+  metadata:
+    name: myvolume
+    namespace: default      					
+    labels:       						
+      app: MYAPP						 
+  spec: 							
+    storageClassName: yourstorageclass          
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 2Gi
+    nfs:
+       server: 170.0.0.
+       path: mnt/nfs_server
+
+run # kubectl apply -f storage.class                 # pv no need to namespace 
+check storage # kubectl get storageclass
+
+
+**** rmember   ---if service/pod/deployment delete pvc will not delete and also depend on type of storage delete/recycle/retain 
+               --- if delete pv also pvc delete         
+to check pod and pvc connect or not run application and check files from nfs-ec2 instance at location # cd /mnt/nfs_share
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
