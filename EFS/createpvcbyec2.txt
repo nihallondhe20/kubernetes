@@ -88,27 +88,3 @@ check storage # kubectl get storageclass
 **** rmember   ---if service/pod/deployment delete pvc will not delete and also depend on type of storage delete/recycle/retain 
                --- if delete pv also pvc delete         
 to check pod and pvc connect or not run application and check files from nfs-ec2 instance at location # cd /mnt/nfs_share
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
