@@ -54,3 +54,17 @@ Prerequisite:
       >  kubectl get all         
       >  kubectl get pods -o wide --all-namespaces
 
+
+IF used terraform follow this steps
+
+1) install kubectl 
+2) install aws-cli using ---  
+     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+     unzip awscliv2.zip
+    sudo ./aws/install
+3) now check aws-cli and configure aws credentials again to access cluster if not access----
+4)      # aws configure
+5)      now final work add kube/config file defaultly using ---  aws eks update-kubeconfig --name terraform-eks-demo --region us-east-1
+6)      check node and delete if required !!!!!!!!
+
+
